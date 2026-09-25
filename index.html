@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MAILHACK v4.0 - Real Temp Mail API</title>
+    <title>MAILHACK v4.1 - Real Temp Mail API</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -19,7 +19,6 @@
             text-shadow: 0 0 10px rgba(0, 255, 102, 0.5);
         }
 
-        /* Scrollbar personalizada estilo hacker */
         ::-webkit-scrollbar {
             width: 6px;
         }
@@ -43,7 +42,7 @@
             <span>SESSION: root@mailhack-termux:~#</span>
             <div class="flex items-center gap-2">
                 <span class="inline-block w-2 h-2 rounded-full bg-green-500 animate-ping"></span>
-                <span class="text-green-400 font-bold">API MAIL.TM: CONECTADA</span>
+                <span class="text-green-400 font-bold">ESTADO: ONLINE</span>
             </div>
         </div>
         <div class="overflow-x-auto">
@@ -56,22 +55,21 @@
             </pre>
         </div>
         <div class="flex justify-between items-center text-xs text-green-400/60 mt-2">
-            <span>>> Módulo: Live SMTP Socket Integration</span>
-            <span>IP: [REAL MASKED]</span>
+            <span>>> Módulo: Mobile WebView Bridge</span>
+            <span>IP: [SECURE]</span>
         </div>
     </header>
 
     <!-- MAIN INTERFACE -->
     <main class="w-full max-w-4xl mx-auto my-4 space-y-4 flex-grow grid grid-cols-1 md:grid-cols-3 gap-4">
         
-        <!-- PANEL IZQUIERDO: GENERADOR Y CONTROLES -->
+        <!-- PANEL IZQUIERDO -->
         <div class="md:col-span-1 space-y-4">
-            <!-- GENERATOR BOX -->
             <div class="border border-green-500/40 bg-black p-4 rounded shadow-lg flex flex-col justify-between">
                 <div>
                     <h2 class="text-xs font-bold text-green-400 mb-2 uppercase tracking-wider">>> 1. Alias Temporal Real</h2>
                     <div class="space-y-2">
-                        <input type="text" id="emailBox" readonly value="conectando con API..." 
+                        <input type="text" id="emailBox" readonly value="pulsar 'nuevo' para iniciar..." 
                             class="w-full bg-black border border-green-500/50 text-green-300 px-2 py-2 rounded focus:outline-none text-xs font-mono select-all">
                         <div class="grid grid-cols-2 gap-2">
                             <button onclick="crearBuzonReal()" 
@@ -89,7 +87,7 @@
                 <div class="mt-4 pt-3 border-t border-green-500/20 text-xs space-y-1">
                     <div class="flex justify-between">
                         <span class="text-green-500/70">Estado:</span>
-                        <span id="statusText" class="text-yellow-400 font-bold">Inicializando...</span>
+                        <span id="statusText" class="text-yellow-400 font-bold">En espera</span>
                     </div>
                     <div class="flex justify-between">
                         <span class="text-green-500/70">Expiración:</span>
@@ -102,31 +100,29 @@
             <div class="border border-green-500/40 bg-black p-3 rounded shadow-lg h-44 flex flex-col">
                 <h2 class="text-xs font-bold text-green-400 mb-1 uppercase tracking-wider border-b border-green-500/20 pb-1">>> Sys. Log</h2>
                 <div id="consoleLogs" class="flex-grow overflow-y-auto font-mono text-[10px] text-green-400/80 space-y-1 pr-1">
-                    <div>[00:01] Cargando motor Termux...</div>
+                    <div>[00:01] Sistema APK cargado correctamente.</div>
                 </div>
             </div>
         </div>
 
-        <!-- PANEL DERECHO: BANDEJA DE ENTRADA Y LECTOR -->
+        <!-- PANEL DERECHO -->
         <div class="md:col-span-2 flex flex-col">
             <div class="border border-green-500/40 bg-black p-4 rounded shadow-lg flex flex-col h-full min-h-[320px]">
                 <div class="flex justify-between items-center mb-3 border-b border-green-500/20 pb-2">
-                    <h2 class="text-xs font-bold text-green-400 uppercase tracking-wider">>> 2. Bandeja de Entrada (Live Inbox)</h2>
+                    <h2 class="text-xs font-bold text-green-400 uppercase tracking-wider">>> 2. Bandeja de Entrada</h2>
                     <div class="flex gap-2">
                         <button onclick="verificarMensajesReales()" class="text-[11px] text-green-400 hover:text-green-300 underline">
-                            [ Refrescar Inbox ]
+                            [ Refrescar ]
                         </button>
                     </div>
                 </div>
                 
-                <!-- LISTA DE MENSAJES -->
                 <div id="inboxList" class="flex-grow overflow-y-auto space-y-2 pr-1 font-mono text-xs max-h-56">
                     <div class="border border-green-500/20 bg-zinc-950 p-2.5 rounded text-center text-green-500/50">
-                        Bandeja vacía. Esperando correos entrantes reales...
+                        Genera un buzón para comenzar a recibir mensajes.
                     </div>
                 </div>
 
-                <!-- LECTOR DE MENSAJE INTERACTIVO -->
                 <div id="messageViewer" class="mt-3 border border-green-500/30 bg-black p-3 rounded hidden">
                     <div class="flex justify-between items-center border-b border-green-500/20 pb-1 mb-2">
                         <span id="viewSubject" class="text-xs font-bold text-green-300">Asunto: --</span>
@@ -134,26 +130,22 @@
                     </div>
                     <div class="text-[11px] text-green-400/70 mb-1" id="viewSender">Remitente: --</div>
                     <div id="viewBody" class="text-xs text-green-200 whitespace-pre-line bg-zinc-950 p-2 rounded border border-green-500/10 mt-1 max-h-28 overflow-y-auto">
-                        Contenido del mensaje...
+                        Contenido...
                     </div>
                 </div>
-
             </div>
         </div>
-
     </main>
 
-    <!-- FOOTER -->
     <footer class="w-full max-w-4xl mx-auto text-center text-xs text-green-500/40 border-t border-green-500/20 pt-2 flex flex-col sm:flex-row justify-between">
-        <span>MAILHACK TERMINAL INTERFACE v4.0</span>
-        <span class="animate-pulse text-green-400">[REAL API ACTIVE]</span>
+        <span>MAILHACK TERMINAL v4.1</span>
+        <span class="animate-pulse text-green-400">[READY]</span>
     </footer>
 
-    <!-- SCRIPT LOGIC (CONECTADO A MAIL.TM API) -->
     <script>
         let tokenActual = "";
         let emailActual = "";
-        let tiempoRestante = 3600; // 1 hora
+        let tiempoRestante = 3600;
         let timerInterval;
         let pollingInterval;
 
@@ -167,9 +159,9 @@
         }
 
         async function crearBuzonReal() {
-            logTermux("Solicitando dominios disponibles a la API...");
+            logTermux("Conectando con servidores de correo...");
+            document.getElementById('statusText').innerText = "Conectando...";
             try {
-                // 1. Obtener dominios válidos
                 const resDominios = await fetch('https://api.mail.tm/domains');
                 const dataDominios = await resDominios.json();
                 if (!dataDominios['hydra:member'] || dataDominios['hydra:member'].length === 0) {
@@ -177,23 +169,18 @@
                 }
                 const dominio = dataDominios['hydra:member'][0].domain;
 
-                // 2. Generar credenciales aleatorias
-                const randomName = 'user_' + Math.random().toString(36.substring(2, 10));
+                const randomName = 'user_' + Math.random().toString(36).substring(2, 10);
                 emailActual = `${randomName}@${dominio}`;
                 const password = Math.random().toString(36).substring(2, 12) + "A1!";
 
-                logTermux(`Creando cuenta para: ${emailActual}`);
-
-                // 3. Registrar cuenta en el servidor
                 const resAccount = await fetch('https://api.mail.tm/accounts', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ address: emailActual, password: password })
                 });
 
-                if (!resAccount.ok) throw new Error("Fallo al registrar cuenta temporal");
+                if (!resAccount.ok) throw new Error("Error al registrar buzón");
 
-                // 4. Obtener Token de acceso Bearer
                 const resToken = await fetch('https://api.mail.tm/token', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -204,28 +191,27 @@
                 tokenActual = dataToken.token;
 
                 document.getElementById('emailBox').value = emailActual;
-                document.getElementById('statusText').innerText = "Activo (Recibiendo)";
+                document.getElementById('statusText').innerText = "Activo";
                 document.getElementById('statusText').className = "text-green-400 font-bold";
                 
-                logTermux("¡Buzón listo y escuchando mensajes reales!");
-                
+                logTermux("¡Buzón activo y escuchando!");
                 reiniciarTimer();
                 iniciarAutoSync();
                 verificarMensajesReales();
 
             } catch (error) {
-                logTermux(`ERROR: ${error.message}`);
-                document.getElementById('statusText').innerText = "Error API";
+                logTermux(`ERROR: Verifique su internet.`);
+                document.getElementById('statusText').innerText = "Error de red";
             }
         }
 
         function copiarCorreo() {
-            if (!emailActual) return;
+            if (!emailActual) {
+                logTermux("Primero genere un correo.");
+                return;
+            }
             navigator.clipboard.writeText(emailActual);
             logTermux("Alias copiado al portapapeles.");
-            const copyText = document.getElementById("emailBox");
-            copyText.classList.add("bg-green-950");
-            setTimeout(() => copyText.classList.remove("bg-green-950"), 300);
         }
 
         function reiniciarTimer() {
@@ -254,7 +240,6 @@
 
         async function verificarMensajesReales() {
             if (!tokenActual) return;
-            logTermux("Sincronizando bandeja con el servidor SMTP...");
             try {
                 const res = await fetch('https://api.mail.tm/messages', {
                     headers: { 'Authorization': `Bearer ${tokenActual}` }
@@ -283,14 +268,12 @@
                     `;
                     inbox.appendChild(div);
                 });
-                logTermux(`Bandeja actualizada: ${mensajes.length} mensaje(s).`);
             } catch (err) {
-                logTermux("Error al sincronizar mensajes.");
+                // Error silencioso de red en background
             }
         }
 
         async function leerDetalleMensaje(id, asunto, remitente) {
-            logTermux(`Descargando cuerpo del mensaje ID: ${id}...`);
             try {
                 const res = await fetch(`https://api.mail.tm/messages/${id}`, {
                     headers: { 'Authorization': `Bearer ${tokenActual}` }
@@ -299,12 +282,10 @@
 
                 document.getElementById('viewSubject').innerText = `Asunto: ${asunto}`;
                 document.getElementById('viewSender').innerText = `Remitente: ${remitente}`;
-                // Muestra el texto plano o el HTML limpio del mensaje recibido
-                document.getElementById('viewBody').innerText = data.text || data.intro || "Contenido vacío o formato HTML no soportado.";
+                document.getElementById('viewBody').innerText = data.text || data.intro || "Contenido vacío.";
                 document.getElementById('messageViewer').classList.remove('hidden');
-                logTermux("Mensaje abierto con éxito.");
             } catch (err) {
-                logTermux("Error al cargar el contenido del mensaje.");
+                logTermux("Error al cargar mensaje.");
             }
         }
 
@@ -314,16 +295,10 @@
 
         function iniciarAutoSync() {
             clearInterval(pollingInterval);
-            // Revisa automáticamente nuevos correos cada 10 segundos
             pollingInterval = setInterval(() => {
                 verificarMensajesReales();
             }, 10000);
         }
-
-        // Crear buzón real automáticamente al cargar la página
-        window.onload = () => {
-            crearBuzonReal();
-        };
     </script>
 </body>
-</html>
+    </html>
