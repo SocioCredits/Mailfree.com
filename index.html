@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MAILHACK v4.1 - Real Temp Mail API</title>
+    <title>MAILHACK v4.2 - Secure Temp Mail</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -36,13 +36,13 @@
 </head>
 <body class="min-h-screen flex flex-col justify-between p-3 sm:p-6">
 
-    <!-- HEADER / TERMINAL INFO -->
+    <!-- HEADER -->
     <header class="w-full max-w-4xl mx-auto border border-green-500/40 bg-black p-4 rounded shadow-lg">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center text-xs text-green-400/70 border-b border-green-500/20 pb-2 mb-2 gap-1">
             <span>SESSION: root@mailhack-termux:~#</span>
             <div class="flex items-center gap-2">
                 <span class="inline-block w-2 h-2 rounded-full bg-green-500 animate-ping"></span>
-                <span class="text-green-400 font-bold">ESTADO: ONLINE</span>
+                <span class="text-green-400 font-bold">API CLOUD: ONLINE</span>
             </div>
         </div>
         <div class="overflow-x-auto">
@@ -55,7 +55,7 @@
             </pre>
         </div>
         <div class="flex justify-between items-center text-xs text-green-400/60 mt-2">
-            <span>>> Módulo: Mobile WebView Bridge</span>
+            <span>>> Módulo: Cloud Remote Bridge</span>
             <span>IP: [SECURE]</span>
         </div>
     </header>
@@ -69,7 +69,7 @@
                 <div>
                     <h2 class="text-xs font-bold text-green-400 mb-2 uppercase tracking-wider">>> 1. Alias Temporal Real</h2>
                     <div class="space-y-2">
-                        <input type="text" id="emailBox" readonly value="pulsar 'nuevo' para iniciar..." 
+                        <input type="text" id="emailBox" readonly value="generando..." 
                             class="w-full bg-black border border-green-500/50 text-green-300 px-2 py-2 rounded focus:outline-none text-xs font-mono select-all">
                         <div class="grid grid-cols-2 gap-2">
                             <button onclick="crearBuzonReal()" 
@@ -87,7 +87,7 @@
                 <div class="mt-4 pt-3 border-t border-green-500/20 text-xs space-y-1">
                     <div class="flex justify-between">
                         <span class="text-green-500/70">Estado:</span>
-                        <span id="statusText" class="text-yellow-400 font-bold">En espera</span>
+                        <span id="statusText" class="text-yellow-400 font-bold">Iniciando...</span>
                     </div>
                     <div class="flex justify-between">
                         <span class="text-green-500/70">Expiración:</span>
@@ -100,7 +100,7 @@
             <div class="border border-green-500/40 bg-black p-3 rounded shadow-lg h-44 flex flex-col">
                 <h2 class="text-xs font-bold text-green-400 mb-1 uppercase tracking-wider border-b border-green-500/20 pb-1">>> Sys. Log</h2>
                 <div id="consoleLogs" class="flex-grow overflow-y-auto font-mono text-[10px] text-green-400/80 space-y-1 pr-1">
-                    <div>[00:01] Sistema APK cargado correctamente.</div>
+                    <div>[00:01] Conectando a pasarela remota...</div>
                 </div>
             </div>
         </div>
@@ -119,7 +119,7 @@
                 
                 <div id="inboxList" class="flex-grow overflow-y-auto space-y-2 pr-1 font-mono text-xs max-h-56">
                     <div class="border border-green-500/20 bg-zinc-950 p-2.5 rounded text-center text-green-500/50">
-                        Genera un buzón para comenzar a recibir mensajes.
+                        Sincronizando buzón...
                     </div>
                 </div>
 
@@ -138,8 +138,8 @@
     </main>
 
     <footer class="w-full max-w-4xl mx-auto text-center text-xs text-green-500/40 border-t border-green-500/20 pt-2 flex flex-col sm:flex-row justify-between">
-        <span>MAILHACK TERMINAL v4.1</span>
-        <span class="animate-pulse text-green-400">[READY]</span>
+        <span>MAILHACK TERMINAL v4.2</span>
+        <span class="animate-pulse text-green-400">[CLOUD SECURE]</span>
     </footer>
 
     <script>
@@ -159,7 +159,7 @@
         }
 
         async function crearBuzonReal() {
-            logTermux("Conectando con servidores de correo...");
+            logTermux("Solicitando dominio seguro...");
             document.getElementById('statusText').innerText = "Conectando...";
             try {
                 const resDominios = await fetch('https://api.mail.tm/domains');
@@ -173,13 +173,15 @@
                 emailActual = `${randomName}@${dominio}`;
                 const password = Math.random().toString(36).substring(2, 12) + "A1!";
 
+                logTermux(`Registrando alias: ${emailActual}`);
+
                 const resAccount = await fetch('https://api.mail.tm/accounts', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ address: emailActual, password: password })
                 });
 
-                if (!resAccount.ok) throw new Error("Error al registrar buzón");
+                if (!resAccount.ok) throw new Error("Fallo al registrar cuenta");
 
                 const resToken = await fetch('https://api.mail.tm/token', {
                     method: 'POST',
@@ -194,20 +196,20 @@
                 document.getElementById('statusText').innerText = "Activo";
                 document.getElementById('statusText').className = "text-green-400 font-bold";
                 
-                logTermux("¡Buzón activo y escuchando!");
+                logTermux("¡Buzón operativo y escuchando!");
                 reiniciarTimer();
                 iniciarAutoSync();
                 verificarMensajesReales();
 
             } catch (error) {
-                logTermux(`ERROR: Verifique su internet.`);
-                document.getElementById('statusText').innerText = "Error de red";
+                logTermux(`ERROR: ${error.message}`);
+                document.getElementById('statusText').innerText = "Error API";
             }
         }
 
         function copiarCorreo() {
             if (!emailActual) {
-                logTermux("Primero genere un correo.");
+                logTermux("No hay correo generado.");
                 return;
             }
             navigator.clipboard.writeText(emailActual);
@@ -269,7 +271,7 @@
                     inbox.appendChild(div);
                 });
             } catch (err) {
-                // Error silencioso de red en background
+                logTermux("Error al sincronizar mensajes.");
             }
         }
 
@@ -299,6 +301,11 @@
                 verificarMensajesReales();
             }, 10000);
         }
+
+        // Auto-ejecución al cargar la página remota
+        window.onload = () => {
+            crearBuzonReal();
+        };
     </script>
 </body>
-    </html>
+                            </html>
