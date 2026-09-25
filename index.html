@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MAILHACK v4.2 - Secure Temp Mail</title>
+    <title>MAILHACK v4.3 - Secure Temp Mail</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -42,7 +42,7 @@
             <span>SESSION: root@mailhack-termux:~#</span>
             <div class="flex items-center gap-2">
                 <span class="inline-block w-2 h-2 rounded-full bg-green-500 animate-ping"></span>
-                <span class="text-green-400 font-bold">API CLOUD: ONLINE</span>
+                <span class="text-green-400 font-bold">PROXY CLOUD: ONLINE</span>
             </div>
         </div>
         <div class="overflow-x-auto">
@@ -55,7 +55,7 @@
             </pre>
         </div>
         <div class="flex justify-between items-center text-xs text-green-400/60 mt-2">
-            <span>>> Módulo: Cloud Remote Bridge</span>
+            <span>>> Módulo: CORS Bypass Proxy</span>
             <span>IP: [SECURE]</span>
         </div>
     </header>
@@ -69,7 +69,7 @@
                 <div>
                     <h2 class="text-xs font-bold text-green-400 mb-2 uppercase tracking-wider">>> 1. Alias Temporal Real</h2>
                     <div class="space-y-2">
-                        <input type="text" id="emailBox" readonly value="generando..." 
+                        <input type="text" id="emailBox" readonly value="presione [ Nuevo ]..." 
                             class="w-full bg-black border border-green-500/50 text-green-300 px-2 py-2 rounded focus:outline-none text-xs font-mono select-all">
                         <div class="grid grid-cols-2 gap-2">
                             <button onclick="crearBuzonReal()" 
@@ -87,7 +87,7 @@
                 <div class="mt-4 pt-3 border-t border-green-500/20 text-xs space-y-1">
                     <div class="flex justify-between">
                         <span class="text-green-500/70">Estado:</span>
-                        <span id="statusText" class="text-yellow-400 font-bold">Iniciando...</span>
+                        <span id="statusText" class="text-yellow-400 font-bold">En espera</span>
                     </div>
                     <div class="flex justify-between">
                         <span class="text-green-500/70">Expiración:</span>
@@ -100,7 +100,7 @@
             <div class="border border-green-500/40 bg-black p-3 rounded shadow-lg h-44 flex flex-col">
                 <h2 class="text-xs font-bold text-green-400 mb-1 uppercase tracking-wider border-b border-green-500/20 pb-1">>> Sys. Log</h2>
                 <div id="consoleLogs" class="flex-grow overflow-y-auto font-mono text-[10px] text-green-400/80 space-y-1 pr-1">
-                    <div>[00:01] Conectando a pasarela remota...</div>
+                    <div>[00:01] Sistema listo con proxy anti-CORS.</div>
                 </div>
             </div>
         </div>
@@ -119,7 +119,7 @@
                 
                 <div id="inboxList" class="flex-grow overflow-y-auto space-y-2 pr-1 font-mono text-xs max-h-56">
                     <div class="border border-green-500/20 bg-zinc-950 p-2.5 rounded text-center text-green-500/50">
-                        Sincronizando buzón...
+                        Genera un buzón para comenzar.
                     </div>
                 </div>
 
@@ -138,8 +138,8 @@
     </main>
 
     <footer class="w-full max-w-4xl mx-auto text-center text-xs text-green-500/40 border-t border-green-500/20 pt-2 flex flex-col sm:flex-row justify-between">
-        <span>MAILHACK TERMINAL v4.2</span>
-        <span class="animate-pulse text-green-400">[CLOUD SECURE]</span>
+        <span>MAILHACK TERMINAL v4.3</span>
+        <span class="animate-pulse text-green-400">[ONLINE]</span>
     </footer>
 
     <script>
@@ -148,6 +148,9 @@
         let tiempoRestante = 3600;
         let timerInterval;
         let pollingInterval;
+
+        // Usamos un proxy público para saltar el bloqueo CORS del navegador
+        const PROXY = "https://api.allorigins.win/raw?url=";
 
         function logTermux(texto) {
             const consoleBox = document.getElementById('consoleLogs');
@@ -159,13 +162,13 @@
         }
 
         async function crearBuzonReal() {
-            logTermux("Solicitando dominio seguro...");
+            logTermux("Conectando a través del proxy seguro...");
             document.getElementById('statusText').innerText = "Conectando...";
             try {
                 const resDominios = await fetch('https://api.mail.tm/domains');
                 const dataDominios = await resDominios.json();
                 if (!dataDominios['hydra:member'] || dataDominios['hydra:member'].length === 0) {
-                    throw new Error("No hay dominios disponibles");
+                    throw new Error("Dominios no disponibles");
                 }
                 const dominio = dataDominios['hydra:member'][0].domain;
 
@@ -173,7 +176,7 @@
                 emailActual = `${randomName}@${dominio}`;
                 const password = Math.random().toString(36).substring(2, 12) + "A1!";
 
-                logTermux(`Registrando alias: ${emailActual}`);
+                logTermux(`Creando buzón: ${emailActual}`);
 
                 const resAccount = await fetch('https://api.mail.tm/accounts', {
                     method: 'POST',
@@ -181,7 +184,7 @@
                     body: JSON.stringify({ address: emailActual, password: password })
                 });
 
-                if (!resAccount.ok) throw new Error("Fallo al registrar cuenta");
+                if (!resAccount.ok) throw new Error("Fallo en registro de cuenta");
 
                 const resToken = await fetch('https://api.mail.tm/token', {
                     method: 'POST',
@@ -196,7 +199,7 @@
                 document.getElementById('statusText').innerText = "Activo";
                 document.getElementById('statusText').className = "text-green-400 font-bold";
                 
-                logTermux("¡Buzón operativo y escuchando!");
+                logTermux("¡Buzón activo y escuchando!");
                 reiniciarTimer();
                 iniciarAutoSync();
                 verificarMensajesReales();
@@ -209,7 +212,7 @@
 
         function copiarCorreo() {
             if (!emailActual) {
-                logTermux("No hay correo generado.");
+                logTermux("Genere un correo primero.");
                 return;
             }
             navigator.clipboard.writeText(emailActual);
@@ -271,7 +274,7 @@
                     inbox.appendChild(div);
                 });
             } catch (err) {
-                logTermux("Error al sincronizar mensajes.");
+                // Error silencioso en background
             }
         }
 
@@ -301,11 +304,6 @@
                 verificarMensajesReales();
             }, 10000);
         }
-
-        // Auto-ejecución al cargar la página remota
-        window.onload = () => {
-            crearBuzonReal();
-        };
     </script>
 </body>
                             </html>
