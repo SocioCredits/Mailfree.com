@@ -3,307 +3,169 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MAILHACK v4.3 - Secure Temp Mail</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>TempMail Clon - Correo Temporal Gratis</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; }
+        body { background-color: #f0f2f5; color: #333; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        .container { max-width: 800px; width: 100%; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-top: 20px; }
+        h1 { text-align: center; color: #4a154b; margin-bottom: 20px; }
         
-        body {
-            font-family: 'Share Tech Mono', monospace;
-            background-color: #000000;
-            color: #00ff66;
-        }
+        /* Zona del correo generado */
+        .email-box { display: flex; background: #f8f9fa; border: 2px solid #e2e8f0; border-radius: 8px; padding: 10px; margin-bottom: 20px; gap: 10px; }
+        #email-address { flex: 1; font-size: 1.1rem; font-weight: bold; border: none; background: transparent; outline: none; color: #2d3748; }
+        .btn { padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: 6px; transition: background 0.2s; font-weight: bold; }
+        .btn-primary { background-color: #4a154b; color: white; }
+        .btn-primary:hover { background-color: #631c64; }
+        .btn-secondary { background-color: #edf2f7; color: #4a5568; }
+        .btn-secondary:hover { background-color: #e2e8f0; }
 
-        .terminal-glow {
-            text-shadow: 0 0 10px rgba(0, 255, 102, 0.5);
-        }
-
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #000000;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #00ff6655;
-            border-radius: 3px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #00ff66aa;
-        }
+        /* Controles y Bandeja de Entrada */
+        .actions { display: flex; gap: 10px; margin-bottom: 20px; justify-content: center; }
+        .inbox-container { border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; }
+        .inbox-header { background: #4a154b; color: white; padding: 12px; font-weight: bold; display: grid; grid-template-columns: 2fr 3fr 1fr; }
+        .mail-item { display: grid; grid-template-columns: 2fr 3fr 1fr; padding: 12px; border-bottom: 1px solid #edf2f7; cursor: pointer; transition: background 0.1s; }
+        .mail-item:hover { background: #f7fafc; }
+        .mail-item.unread { font-weight: bold; background: #f0fdf4; }
+        
+        /* Visor de contenido del correo */
+        .mail-viewer { margin-top: 20px; padding: 20px; border: 2px dashed #cbd5e0; border-radius: 8px; background: #fff; display: none; }
+        .mail-viewer h3 { margin-bottom: 10px; color: #4a154b; }
+        .mail-body { margin-top: 15px; padding-top: 15px; border-top: 1px solid #e2e8f0; line-height: 1.6; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between p-3 sm:p-6">
+<body>
 
-    <!-- HEADER -->
-    <header class="w-full max-w-4xl mx-auto border border-green-500/40 bg-black p-4 rounded shadow-lg">
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center text-xs text-green-400/70 border-b border-green-500/20 pb-2 mb-2 gap-1">
-            <span>SESSION: root@mailhack-termux:~#</span>
-            <div class="flex items-center gap-2">
-                <span class="inline-block w-2 h-2 rounded-full bg-green-500 animate-ping"></span>
-                <span class="text-green-400 font-bold">PROXY CLOUD: ONLINE</span>
-            </div>
-        </div>
-        <div class="overflow-x-auto">
-            <pre class="text-green-500 font-bold text-xs sm:text-sm leading-none terminal-glow">
-  __  __       _ières _                _    
- |  \/  | __ _(_)_ __ | |__   __ _  ___| | __
- | |\/| |/ _` | | '_ \| '_ \ / _` |/ __| |/ /
- | |  | | (_| | | | | | | | | (_| | (__|   < 
- |_|  |_|\__,_|_|_| |_|_| |_|\__,_|\___|_|\_\
-            </pre>
-        </div>
-        <div class="flex justify-between items-center text-xs text-green-400/60 mt-2">
-            <span>>> Módulo: CORS Bypass Proxy</span>
-            <span>IP: [SECURE]</span>
-        </div>
-    </header>
-
-    <!-- MAIN INTERFACE -->
-    <main class="w-full max-w-4xl mx-auto my-4 space-y-4 flex-grow grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="container">
+        <h1>Buzón de Correo Temporal</h1>
         
-        <!-- PANEL IZQUIERDO -->
-        <div class="md:col-span-1 space-y-4">
-            <div class="border border-green-500/40 bg-black p-4 rounded shadow-lg flex flex-col justify-between">
-                <div>
-                    <h2 class="text-xs font-bold text-green-400 mb-2 uppercase tracking-wider">>> 1. Alias Temporal Real</h2>
-                    <div class="space-y-2">
-                        <input type="text" id="emailBox" readonly value="presione [ Nuevo ]..." 
-                            class="w-full bg-black border border-green-500/50 text-green-300 px-2 py-2 rounded focus:outline-none text-xs font-mono select-all">
-                        <div class="grid grid-cols-2 gap-2">
-                            <button onclick="crearBuzonReal()" 
-                                class="bg-zinc-900 hover:bg-green-950 text-green-300 border border-green-500/60 px-2 py-1.5 rounded text-xs transition-all active:scale-95 text-center">
-                                [ Nuevo ]
-                            </button>
-                            <button onclick="copiarCorreo()" 
-                                class="bg-zinc-900 hover:bg-green-950 text-green-300 border border-green-500/60 px-2 py-1.5 rounded text-xs transition-all active:scale-95 text-center">
-                                [ Copiar ]
-                            </button>
-                        </div>
-                    </div>
-                </div>
+        <!-- Bloque de Visualización y Copiado -->
+        <div class="email-box">
+            <input type="text" id="email-address" readonly value="Generando correo...">
+            <button class="btn btn-secondary" onclick="copiarAlPortapapeles()">Copiar</button>
+        </div>
 
-                <div class="mt-4 pt-3 border-t border-green-500/20 text-xs space-y-1">
-                    <div class="flex justify-between">
-                        <span class="text-green-500/70">Estado:</span>
-                        <span id="statusText" class="text-yellow-400 font-bold">En espera</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-green-500/70">Expiración:</span>
-                        <span id="timer" class="text-red-400 font-bold">60:00</span>
-                    </div>
-                </div>
+        <!-- Botones de Acción -->
+        <div class="actions">
+            <button class="btn btn-primary" onclick="actualizarBandeja()">🔄 Actualizar Bandeja</button>
+            <button class="btn btn-secondary" onclick="generarNuevoCorreo()">Nuevo Correo</button>
+        </div>
+
+        <!-- Estructura de la Bandeja de Entrada -->
+        <div class="inbox-container">
+            <div class="inbox-header">
+                <div>Remitente</div>
+                <div>Asunto</div>
+                <div>Acción</div>
             </div>
-
-            <!-- CONSOLA DE LOGS -->
-            <div class="border border-green-500/40 bg-black p-3 rounded shadow-lg h-44 flex flex-col">
-                <h2 class="text-xs font-bold text-green-400 mb-1 uppercase tracking-wider border-b border-green-500/20 pb-1">>> Sys. Log</h2>
-                <div id="consoleLogs" class="flex-grow overflow-y-auto font-mono text-[10px] text-green-400/80 space-y-1 pr-1">
-                    <div>[00:01] Sistema listo con proxy anti-CORS.</div>
-                </div>
+            <div id="inbox-list">
+                <!-- Los correos entrantes se inyectarán aquí mediante JavaScript -->
             </div>
         </div>
 
-        <!-- PANEL DERECHO -->
-        <div class="md:col-span-2 flex flex-col">
-            <div class="border border-green-500/40 bg-black p-4 rounded shadow-lg flex flex-col h-full min-h-[320px]">
-                <div class="flex justify-between items-center mb-3 border-b border-green-500/20 pb-2">
-                    <h2 class="text-xs font-bold text-green-400 uppercase tracking-wider">>> 2. Bandeja de Entrada</h2>
-                    <div class="flex gap-2">
-                        <button onclick="verificarMensajesReales()" class="text-[11px] text-green-400 hover:text-green-300 underline">
-                            [ Refrescar ]
-                        </button>
-                    </div>
-                </div>
-                
-                <div id="inboxList" class="flex-grow overflow-y-auto space-y-2 pr-1 font-mono text-xs max-h-56">
-                    <div class="border border-green-500/20 bg-zinc-950 p-2.5 rounded text-center text-green-500/50">
-                        Genera un buzón para comenzar.
-                    </div>
-                </div>
-
-                <div id="messageViewer" class="mt-3 border border-green-500/30 bg-black p-3 rounded hidden">
-                    <div class="flex justify-between items-center border-b border-green-500/20 pb-1 mb-2">
-                        <span id="viewSubject" class="text-xs font-bold text-green-300">Asunto: --</span>
-                        <button onclick="cerrarMensaje()" class="text-xs text-red-400 hover:text-red-300 font-bold">[X Cerrar]</button>
-                    </div>
-                    <div class="text-[11px] text-green-400/70 mb-1" id="viewSender">Remitente: --</div>
-                    <div id="viewBody" class="text-xs text-green-200 whitespace-pre-line bg-zinc-950 p-2 rounded border border-green-500/10 mt-1 max-h-28 overflow-y-auto">
-                        Contenido...
-                    </div>
-                </div>
-            </div>
+        <!-- Visor del Correo Seleccionado -->
+        <div id="mail-viewer" class="mail-viewer">
+            <button class="btn btn-secondary" style="float: right;" onclick="cerrarVisor()">Cerrar</button>
+            <h3 id="view-subject">Asunto del correo</h3>
+            <p><strong>De:</strong> <span id="view-from"></span></p>
+            <div id="view-body" class="mail-body">Contenido...</div>
         </div>
-    </main>
-
-    <footer class="w-full max-w-4xl mx-auto text-center text-xs text-green-500/40 border-t border-green-500/20 pt-2 flex flex-col sm:flex-row justify-between">
-        <span>MAILHACK TERMINAL v4.3</span>
-        <span class="animate-pulse text-green-400">[ONLINE]</span>
-    </footer>
+    </div>
 
     <script>
-        let tokenActual = "";
-        let emailActual = "";
-        let tiempoRestante = 3600;
-        let timerInterval;
-        let pollingInterval;
+        // Configuración de la API externa de 1secmail
+        const API_URL = "https://1secmail.com";
+        let login = "";
+        let domain = "";
 
-        // Usamos un proxy público para saltar el bloqueo CORS del navegador
-        const PROXY = "https://api.allorigins.win/raw?url=";
+        // Al cargar la página, se inicializa un correo aleatorio
+        window.onload = () => {
+            generarNuevoCorreo();
+            // Polling: Actualiza automáticamente la bandeja cada 10 segundos
+            setInterval(actualizarBandeja, 10000);
+        };
 
-        function logTermux(texto) {
-            const consoleBox = document.getElementById('consoleLogs');
-            const timeStr = new Date().toLocaleTimeString();
-            const div = document.createElement('div');
-            div.innerText = `[${timeStr}] ${texto}`;
-            consoleBox.appendChild(div);
-            consoleBox.scrollTop = consoleBox.scrollHeight;
-        }
-
-        async function crearBuzonReal() {
-            logTermux("Conectando a través del proxy seguro...");
-            document.getElementById('statusText').innerText = "Conectando...";
-            try {
-                const resDominios = await fetch('https://api.mail.tm/domains');
-                const dataDominios = await resDominios.json();
-                if (!dataDominios['hydra:member'] || dataDominios['hydra:member'].length === 0) {
-                    throw new Error("Dominios no disponibles");
-                }
-                const dominio = dataDominios['hydra:member'][0].domain;
-
-                const randomName = 'user_' + Math.random().toString(36).substring(2, 10);
-                emailActual = `${randomName}@${dominio}`;
-                const password = Math.random().toString(36).substring(2, 12) + "A1!";
-
-                logTermux(`Creando buzón: ${emailActual}`);
-
-                const resAccount = await fetch('https://api.mail.tm/accounts', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ address: emailActual, password: password })
+        // 1. Lógica para generar un correo
+        function generarNuevoCorreo() {
+            document.getElementById('email-address').value = "Generando...";
+            cerrarVisor();
+            
+            // Solicita a la API una dirección aleatoria
+            fetch(`${API_URL}?action=genRandomMailbox&count=1`)
+                .then(res => res.json())
+                .then(data => {
+                    const fullEmail = data[0];
+                    document.getElementById('email-address').value = fullEmail;
+                    
+                    // Separa el usuario y el dominio requeridos por la API
+                    const parts = fullEmail.split('@');
+                    login = parts[0];
+                    domain = parts[1];
+                    
+                    actualizarBandeja();
+                })
+                .catch(err => {
+                    document.getElementById('email-address').value = "Error al generar";
+                    console.error(err);
                 });
+        }
 
-                if (!resAccount.ok) throw new Error("Fallo en registro de cuenta");
+        // 2. Lógica para leer la bandeja de entrada
+        function actualizarBandeja() {
+            if (!login || !domain) return;
+            const inboxList = document.getElementById('inbox-list');
 
-                const resToken = await fetch('https://api.mail.tm/token', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ address: emailActual, password: password })
+            fetch(`${API_URL}?action=getMessages&login=${login}&domain=${domain}`)
+                .then(res => res.json())
+                .then(messages => {
+                    inboxList.innerHTML = "";
+                    if (messages.length === 0) {
+                        inboxList.innerHTML = `<div style="padding: 20px; text-align: center; color: #a0aec0;">La bandeja está vacía. Esperando correos...</div>`;
+                        return;
+                    }
+
+                    // Renderiza cada correo en la lista
+                    messages.forEach(msg => {
+                        const row = document.createElement('div');
+                        row.className = 'mail-item';
+                        row.onclick = () => verDetalleCorreo(msg.id);
+                        row.innerHTML = `
+                            <div>${msg.from}</div>
+                            <div>${msg.subject}</div>
+                            <div><button class="btn btn-secondary" style="padding: 2px 8px; font-size: 0.8rem;">Leer</button></div>
+                        `;
+                        inboxList.appendChild(row);
+                    });
                 });
-
-                const dataToken = await resToken.json();
-                tokenActual = dataToken.token;
-
-                document.getElementById('emailBox').value = emailActual;
-                document.getElementById('statusText').innerText = "Activo";
-                document.getElementById('statusText').className = "text-green-400 font-bold";
-                
-                logTermux("¡Buzón activo y escuchando!");
-                reiniciarTimer();
-                iniciarAutoSync();
-                verificarMensajesReales();
-
-            } catch (error) {
-                logTermux(`ERROR: ${error.message}`);
-                document.getElementById('statusText').innerText = "Error API";
-            }
         }
 
-        function copiarCorreo() {
-            if (!emailActual) {
-                logTermux("Genere un correo primero.");
-                return;
-            }
-            navigator.clipboard.writeText(emailActual);
-            logTermux("Alias copiado al portapapeles.");
-        }
-
-        function reiniciarTimer() {
-            clearInterval(timerInterval);
-            tiempoRestante = 3600;
-            actualizarDisplayTimer();
-            timerInterval = setInterval(() => {
-                tiempoRestante--;
-                actualizarDisplayTimer();
-                if(tiempoRestante <= 0) {
-                    clearInterval(timerInterval);
-                    clearInterval(pollingInterval);
-                    document.getElementById('statusText').innerText = "Expirado";
-                    document.getElementById('statusText').className = "text-red-500 font-bold";
-                    logTermux("¡Buzón expirado!");
-                }
-            }, 1000);
-        }
-
-        function actualizarDisplayTimer() {
-            const minutos = Math.floor(tiempoRestante / 60);
-            const segundos = tiempoRestante % 60;
-            document.getElementById('timer').innerText = 
-                `${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')}`;
-        }
-
-        async function verificarMensajesReales() {
-            if (!tokenActual) return;
-            try {
-                const res = await fetch('https://api.mail.tm/messages', {
-                    headers: { 'Authorization': `Bearer ${tokenActual}` }
+        // 3. Lógica para abrir y leer un correo específico
+        function verDetalleCorreo(id) {
+            fetch(`${API_URL}?action=readMessage&login=${login}&domain=${domain}&id=${id}`)
+                .then(res => res.json())
+                .then(mail => {
+                    document.getElementById('view-subject').innerText = mail.subject;
+                    document.getElementById('view-from').innerText = mail.from;
+                    
+                    // Si el correo viene en formato HTML usa body, si no, textBody
+                    const content = mail.htmlBody ? mail.htmlBody : mail.textBody.replace(/\n/g, '<br>');
+                    document.getElementById('view-body').innerHTML = content;
+                    
+                    document.getElementById('mail-viewer').style.display = 'block';
+                    document.getElementById('mail-viewer').scrollIntoView({ behavior: 'smooth' });
                 });
-                const data = await res.json();
-                const mensajes = data['hydra:member'] || [];
-
-                const inbox = document.getElementById('inboxList');
-                inbox.innerHTML = "";
-
-                if (mensajes.length === 0) {
-                    inbox.innerHTML = `<div class="border border-green-500/20 bg-zinc-950 p-2.5 rounded text-center text-green-500/50">Bandeja vacía. Esperando correos...</div>`;
-                    return;
-                }
-
-                mensajes.forEach(msg => {
-                    const div = document.createElement('div');
-                    div.className = "border border-green-500/40 bg-zinc-950 p-2.5 rounded hover:bg-green-950/40 transition-all cursor-pointer";
-                    div.onclick = () => leerDetalleMensaje(msg.id, msg.subject, msg.from.address);
-                    div.innerHTML = `
-                        <div class="flex justify-between text-green-400 font-bold text-xs">
-                            <span>[FROM]: ${msg.from.address}</span>
-                            <span class="text-green-600 text-[10px]">Nuevo</span>
-                        </div>
-                        <p class="text-green-300/80 truncate mt-1">Asunto: ${msg.subject || 'Sin Asunto'}</p>
-                    `;
-                    inbox.appendChild(div);
-                });
-            } catch (err) {
-                // Error silencioso en background
-            }
         }
 
-        async function leerDetalleMensaje(id, asunto, remitente) {
-            try {
-                const res = await fetch(`https://api.mail.tm/messages/${id}`, {
-                    headers: { 'Authorization': `Bearer ${tokenActual}` }
-                });
-                const data = await res.json();
-
-                document.getElementById('viewSubject').innerText = `Asunto: ${asunto}`;
-                document.getElementById('viewSender').innerText = `Remitente: ${remitente}`;
-                document.getElementById('viewBody').innerText = data.text || data.intro || "Contenido vacío.";
-                document.getElementById('messageViewer').classList.remove('hidden');
-            } catch (err) {
-                logTermux("Error al cargar mensaje.");
-            }
+        // Funciones auxiliares de la interfaz
+        function copiarAlPortapapeles() {
+            const emailInput = document.getElementById('email-address');
+            emailInput.select();
+            document.execCommand('copy');
+            alert('¡Dirección de correo copiada al portapapeles!');
         }
 
-        function cerrarMensaje() {
-            document.getElementById('messageViewer').classList.add('hidden');
-        }
-
-        function iniciarAutoSync() {
-            clearInterval(pollingInterval);
-            pollingInterval = setInterval(() => {
-                verificarMensajesReales();
-            }, 10000);
+        function cerrarVisor() {
+            document.getElementById('mail-viewer').style.display = 'none';
         }
     </script>
 </body>
-                            </html>
+</html>
